@@ -8,11 +8,11 @@ class Sensor():
 		self.rect = self.image.get_rect()
 		self.angle = angle
 		self.space = 10
-		self.jump_num = 100
+		self.jump_num = 10
 
 	def update(self):
 		center = self.rect.center
-		self.rect.centerx += self.space*cos(radians(self.angle))
-		self.rect.centery += self.space*sin(radians(self.angle))
+		self.rect.x += self.space*cos(radians(self.angle))
+		self.rect.y += self.space*sin(radians(self.angle))
 
 

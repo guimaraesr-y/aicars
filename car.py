@@ -17,7 +17,7 @@ class Car(pygame.sprite.Sprite):
 		self.rect.x, self.rect.y = 200, self.screen.centery-100
 		self.angle = 0
 		self.change_angle = 0
-		self.v = 0
+		self.v = 0.2
 
 		self.score = INITIAL_SCORE
 		self.brain = AI(10, 2, 5, 4)

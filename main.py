@@ -69,6 +69,6 @@ class Background(pygame.sprite.Sprite):
 	def update(self):
 		game.detect_collision(self.game.bg, self.game.cars)
 
-
-game = Game()
-game.run()
+if __name__=='__main__':
+	game = Game()
+	game.run()
