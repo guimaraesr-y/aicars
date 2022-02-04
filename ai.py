@@ -1,78 +1,45 @@
-import math
+import random
 import numpy as np
-from globals import *
 
-class AI:
-	def __init__(self, inputs_num, hidden_layers_num, hidden_layers_neurons_num, outputs_num):
-		self.first_hw = list(list(np.random.randint(AI_MIN_WEIGHT, AI_MAX_WEIGHT) for i in range(inputs_num)) for i in range(hidden_layers_neurons_num))
-		self.hw = list(list(list(np.random.randint(AI_MIN_WEIGHT, AI_MAX_WEIGHT) for i in range(hidden_layers_neurons_num)) for i in range(hidden_layers_neurons_num)) for i in range(hidden_layers_num-1))
-		self.ow = list(list(np.random.randint(AI_MIN_WEIGHT, AI_MAX_WEIGHT) for i in range(hidden_layers_neurons_num)) for i in range(outputs_num))
-		self.inputs_num = inputs_num
-		self.hidden_layers_num = hidden_layers_num
-		self.hidden_layers_neurons_num = hidden_layers_neurons_num
-		self.outputs_num = outputs_num
+class Network(object):
+	def __init__(self, sizes: list):
+		"""A lista `sizes` contém o número de neurônios nas respectivas 
+		camadas da rede. Por exemplo, se a lista for [2, 3, 1] então será 
+		uma rede de três camadas, com o primeira camada contendo 2 neurônios, 
+		a segunda camada 3 neurônios, e a terceira camada 1 neurônio. Os bias 
+		e pesos para a rede são inicializados aleatoriamente, usando uma 
+		distribuição Gaussiana com média 0 e variância 1. Note que a primeira 
+		camada é assumida como uma camada de entrada, e por convenção nós não 
+		definimos nenhum bias para esses neurônios, pois os bias são usados 
+		na computação das saídas das camadas posteriores."""
 
-	def run(self, inputs): # consertar isso aqui
-		result = np.copy(np.matmul(self.first_hw, inputs)) # input layer to first hidden layer
+		self.num_layers = len(sizes)
+		self.sizes = sizes
+		self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+		self.weights = [np.random.randn(y, x) for x, y in zip(sizes[:-1], sizes[1:])]
+		print(self.biases)
+		print('\n')
+		print(self.weights)
 
-		for matrix in self.hw: # get all the hidden layers
-			result = np.copy(np.matmul(matrix, result)) # multiply hidden layer with last multiplication
+	def feedforward(self, network_input):
+		for b, w in zip(self.biases, self.weights):
+			network_input = sigmoid(np.dot(w, network_input)+b)
+		return network_input
 
-		result = np.copy(np.matmul(self.ow, result)) # last hidden layer to output
+	def get_weight_biases(self):
+		return {'biases': self.biases, 'weights': self.weights}
 
-		result = list(map(lambda x: self.activation(x), result)) # activation function
-		return result
+	def set_weight_biases(self, data):
+		self.biases = data['biases']
+		self.weights = data['weights']
 
-	def export_weights(self):
-		first_hw = list()
-		for row in self.first_hw:
-			for i in row:
-				first_hw.append(i)
-		hw = list()
-		for hidden in self.hw:
-			for row in hidden:
-				for i in row:
-					hw.append(i)
-		ow = list()
-		for row in self.ow:
-			for i in row:
-				ow.append(i)
-		return [first_hw, hw, ow]
+# Função de Ativação Sigmóide
+def sigmoid(z):
+	return 1.0/(1.0+np.exp(-z))
 
-	def set_weights(self, w):
-		matrix_fw = list()
-		for i in range(self.hidden_layers_neurons_num):
-			matrix_fw.append(list())
-			for j in range(self.inputs_num):
-				matrix_fw[i].append(w[0][j+(self.inputs_num*i)])
-		
-		matrix_hw = list()
-		for k in range(self.hidden_layers_num-1):
-			matrix_hw.append(list())
-			for i in range(self.hidden_layers_neurons_num):
-				matrix_hw[k].append(list())
-				for j in range(self.hidden_layers_neurons_num):
-					matrix_hw[k][i].append(w[1][j+(self.hidden_layers_neurons_num*i)+((self.hidden_layers_neurons_num**2)*k)])
-
-		matrix_ow = list()
-		for i in range(self.outputs_num):
-			matrix_ow.append(list())
-			for j in range(self.hidden_layers_neurons_num):
-				matrix_ow[i].append(w[2][j+(self.hidden_layers_neurons_num*i)])
-		
-		self.first_hw = matrix_fw
-		self.hw = matrix_hw
-		self.ow = matrix_ow
-
-	def activation(self, x): # using relu
-		if x > 10000: return 10000
-		elif x < 0: return 0
-		else: return x
-
-ai = AI(2, 2, 3, 4)
-test_inputs = [[1], [5]]
-print("result:\n",ai.run(test_inputs))
-#print(ai.ow)
-#print(ai.export_weights())
-#ai.set_weights(ai.export_weights())
-# print(ai.export_weights())
+if __name__=='__main__':
+	rede = Network([1,2,1])
+	print(rede.feedforward(1))
+	print(rede.feedforward(2))
+	print(rede.feedforward(3))
+	print(rede.feedforward(4))
