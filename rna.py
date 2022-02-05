@@ -17,9 +17,6 @@ class Network(object):
 		self.sizes = sizes
 		self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
 		self.weights = [np.random.randn(y, x) for x, y in zip(sizes[:-1], sizes[1:])]
-		print(self.biases)
-		print('\n')
-		print(self.weights)
 
 	def feedforward(self, network_input):
 		for b, w in zip(self.biases, self.weights):

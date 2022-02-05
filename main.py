@@ -28,7 +28,7 @@ class Game:
 
 	def detect_collision(self, g, g_target):
 		for car in pygame.sprite.spritecollide(g, g_target, True, collided=lambda spr1, spr2: pygame.sprite.collide_mask(spr1, spr2)):
-			dead_cars.add(car)
+			self.dead_cars.add(car)
 
 	def run(self):
 		while self.running:
@@ -36,15 +36,15 @@ class Game:
 
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
-					running = False
+					self.running = False
 				elif event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_ESCAPE:
-						running = False
+						self.running = False
 
-			# for x in self.cars:
-			# 	x.move(presses)
+			for x in self.cars:
+				x.move(presses)
 
-			self.screen.fill(BLACK)
+			self.screen.fill(BLACK) 
 
 			self.all_sprites.draw(self.screen)
 			self.all_sprites.update()
@@ -58,7 +58,7 @@ class Game:
 class Background(pygame.sprite.Sprite):
 	def __init__(self, game):
 		super().__init__()
-		self.image = pygame.transform.smoothscale(pygame.image.load('img/background.png').convert(), (game.screen_width, game.screen_height))
+		self.image = pygame.transform.smoothscale(pygame.image.load('img/background.png').convert_alpha(), (game.screen_width, game.screen_height))
 		pygame.Surface.set_colorkey(self.image, (0,0,0))
 		self.rect = self.image.get_rect()
 		self.screen = game.screen.get_rect()
@@ -67,7 +67,7 @@ class Background(pygame.sprite.Sprite):
 		self.game = game
 
 	def update(self):
-		game.detect_collision(self.game.bg, self.game.cars)
+		game.detect_collision(self.game.bg, self.game.cars) # colisão do carro com as paredes da pista
 
 if __name__=='__main__':
 	game = Game()
